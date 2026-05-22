@@ -1,6 +1,6 @@
 # Universal Approximation Demo: `is_leap_year`
 
-这个小 demo 用一个简单的神经网络（1个输入层，1个隐藏层，2个输出层）来近似 `is_leap_year(year)`。
+这个小 demo 用一个简单的神经网络（1个输入层，1个隐藏层，1个输出层）来近似 `is_leap_year(year)`。
 
 ## 通用近似定理
 
@@ -46,8 +46,8 @@ score <  0.5 -> predict False
 1600 <= year < 2400
 ```
 
-网络会在这个区间内把闰年点拟合出来。去掉 `year % 400` 之后，它不会知道
-Gregorian 闰年规则的 400 年周期，因此区间外会明显失败。
+网络会在这个区间内把闰年点拟合出来。然而这个网络并不会真正学会 Gregorian 闰年规则及其 400 年周期，
+因此在区间外的年份，模型的预测会明显失败。
 
 ## Sigmoid 神经元
 
