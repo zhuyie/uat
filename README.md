@@ -106,17 +106,17 @@ right_sigmoid = sigmoid(k * (x - right_edge))
 
 这两个 sigmoid 形状相同，只是由 `bias` 控制，分别向左、向右平移。`left_sigmoid` 先从 0 跳到 1，`right_sigmoid` 稍晚一点从 0 跳到 1。
 
-最终输出层神经元会接收所有隐藏层激活值。在它的加权求和部分，左边的 sigmoid 拿到正权重，右边的 sigmoid 拿到负权重：
+最终输出层会接收所有隐藏层激活值。在它的加权求和部分，左边的 sigmoid 拿到正权重，右边的 sigmoid 拿到负权重：
 
 ```text
-+ output_slope * left_sigmoid
-- output_slope * right_sigmoid
++ left_sigmoid
+- right_sigmoid
 ```
 
 这一组的贡献就变成：
 
 ```text
-output_slope * (left_sigmoid - right_sigmoid)
+left_sigmoid - right_sigmoid
 ```
 
 在两个 sigmoid 的跳变位置之间，`left_sigmoid` 已经接近 1，而 `right_sigmoid` 仍然接近 0，所以差值接近 1；在这个区间外，两个值会同时接近 0 或同时接近 1，所以差值接近 0。这就形成了一个局部 tower，也就是一个窄的 bump。
@@ -131,15 +131,13 @@ output_slope * (left_sigmoid - right_sigmoid)
 一个闰年 -> 两个 hidden neurons -> 一个局部 tower
 ```
 
-输出层把所有组的贡献加起来：
+输出层把所有组的贡献直接加起来：
 
 ```text
-z = output_bias + sum(each tower contribution)
-score = sigmoid(z)
+score = sum(each tower contribution)
 ```
 
-如果某一年命中了某个闰年 tower，`z` 会变大，最终 `score` 接近 1。
-如果没有任何 tower 被命中，`z` 主要由负的 `output_bias` 决定，最终 `score` 接近 0。
+如果某一年命中了某个闰年 tower，`score` 接近 1。如果没有任何 tower 被命中，`score` 接近 0。
 
 ![Sum of tower contributions on the fitting interval](assets/tower-sum-fitting-interval.svg)
 

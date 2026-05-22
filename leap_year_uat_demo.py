@@ -11,12 +11,12 @@ for each leap year in the chosen fitting interval, 1600-2399:
     left sigmoid:   sigmoid(slope * x + bias_left)
     right sigmoid:  sigmoid(slope * x + bias_right)
 
-The final output-layer neuron takes all hidden activations as its inputs. In its
-pre-activation sum, each left sigmoid gets a positive weight and each right
-sigmoid gets a negative weight. Their difference creates one local tower for
-each known leap year; the final sigmoid turns the tower sum into a 0-to-1
-score. Outside the fitting interval there are no towers, so the network does
-not extrapolate the Gregorian rule.
+The final output layer takes all hidden activations as its inputs. Each left
+sigmoid gets a positive weight and each right sigmoid gets a negative weight.
+Their difference creates one local tower for each known leap year, and the
+network directly sums those tower contributions into a 0-to-1 score. Outside
+the fitting interval there are no towers, so the network does not extrapolate
+the Gregorian rule.
 """
 
 from __future__ import annotations
@@ -51,29 +51,29 @@ class SigmoidNeuron:
 
 
 @dataclass(frozen=True)
-class OutputNeuron:
-    """A sigmoid output neuron with one weight per hidden activation."""
+class LinearOutput:
+    """A linear output layer with one weight per hidden activation."""
 
     weights: list[float]
-    bias: float
+    bias: float = 0.0
 
     def activate(self, hidden_outputs: list[float]) -> float:
         z = self.bias
         for weight, hidden_output in zip(self.weights, hidden_outputs):
             z += weight * hidden_output
-        return sigmoid(z)
+        return z
 
 
 class OneHiddenLayerNetwork:
-    """Input layer -> sigmoid hidden layer -> sigmoid output layer."""
+    """Input layer -> sigmoid hidden layer -> linear output layer."""
 
-    def __init__(self, hidden_layer: list[SigmoidNeuron], output_neuron: OutputNeuron) -> None:
+    def __init__(self, hidden_layer: list[SigmoidNeuron], output_layer: LinearOutput) -> None:
         self.hidden_layer = hidden_layer
-        self.output_neuron = output_neuron
+        self.output_layer = output_layer
 
     def forward(self, x: float) -> float:
         hidden_outputs = [neuron.activate(x) for neuron in self.hidden_layer]
-        return self.output_neuron.activate(hidden_outputs)
+        return self.output_layer.activate(hidden_outputs)
 
 
 class LeapYearApproximator:
@@ -85,13 +85,11 @@ class LeapYearApproximator:
         fit_stop: int = 2400,
         half_width: float = 0.45,
         hidden_slope: float = 20.0,
-        output_slope: float = 12.0,
     ) -> None:
         self.fit_start = fit_start
         self.fit_stop = fit_stop
         self.half_width = half_width
         self.hidden_slope = hidden_slope
-        self.output_slope = output_slope
         self.leap_years = [year for year in range(fit_start, fit_stop) if is_leap_year(year)]
         self.network = self._build_network()
 
@@ -115,15 +113,12 @@ class LeapYearApproximator:
             )
 
             hidden_layer.extend([left_sigmoid, right_sigmoid])
-            output_weights.extend([self.output_slope, -self.output_slope])
+            output_weights.extend([1.0, -1.0])
 
-        # The hidden layer sums to about 1 on a leap-year tower and about 0
-        # elsewhere, so this output threshold sits halfway between them.
-        output_neuron = OutputNeuron(
+        output_layer = LinearOutput(
             weights=output_weights,
-            bias=-0.5 * self.output_slope,
         )
-        return OneHiddenLayerNetwork(hidden_layer, output_neuron)
+        return OneHiddenLayerNetwork(hidden_layer, output_layer)
 
     def score(self, year: int) -> float:
         """Return a neural-network score near 1 for leap years and near 0 otherwise."""
@@ -198,7 +193,7 @@ def print_network_summary(model: LeapYearApproximator) -> None:
     print("Network structure")
     print("input neurons: 1  (x = raw year)")
     print(f"hidden neurons: {len(model.network.hidden_layer)} sigmoid neurons")
-    print("output neurons: 1 sigmoid neuron")
+    print("output layer: linear weighted sum")
     print(f"fitting interval: {model.fit_start}-{model.fit_stop - 1}")
     print()
     print("First eight hidden neurons")
@@ -209,7 +204,7 @@ def print_network_summary(model: LeapYearApproximator) -> None:
 
 
 def main() -> None:
-    model = LeapYearApproximator(hidden_slope=20.0, output_slope=12.0)
+    model = LeapYearApproximator(hidden_slope=20.0)
 
     in_correct, in_total = evaluate(model, 1600, 2400)
     out_correct, out_total = evaluate_ranges(model, [(1200, 1600), (2400, 2800)])
@@ -228,7 +223,7 @@ def main() -> None:
     print("Interpretation:")
     print("- Every hidden neuron has the usual weight and bias.")
     print("- Two hidden neurons create one sigmoid bump around one fitted leap year.")
-    print("- The output neuron combines all bumps and applies a final sigmoid.")
+    print("- The output layer directly sums all tower contributions.")
     print("- Years outside the fitting interval have no bumps, so extrapolation fails.")
 
 
