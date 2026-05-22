@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Two shifted sigmoids form a local tower</title>
+  <desc id="desc">Two identical rising sigmoid curves, centered at x=-1 and x=1, are subtracted to form a local tower centered at x=0.</desc>
+  <rect width="1600" height="900" fill="#ffffff"/>
+
+  <defs>
+    <style>
+      .axis { stroke: #111827; stroke-width: 4; fill: none; }
+      .arrow-head { fill: #111827; }
+      .grid { stroke: #cbd5e1; stroke-width: 2; stroke-dasharray: 8 8; }
+      .zero { stroke: #111827; stroke-width: 2.5; stroke-dasharray: 8 8; }
+      .label { font: 700 38px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .tick { font: 28px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #111827; }
+      .math { font: italic 34px Georgia, serif; fill: #111827; }
+    </style>
+  </defs>
+
+  <!-- Left panel: two shifted sigmoids -->
+  <g transform="translate(80 130)">
+    <text x="230" y="-25" class="label" fill="#2563eb">left sigmoid</text>
+    <text x="500" y="-25" class="label" fill="#ef4444">right sigmoid</text>
+
+    <line x1="0" y1="500" x2="690" y2="500" class="axis"/>
+    <path d="M690 500 L670 490 L670 510 Z" class="arrow-head"/>
+    <line x1="0" y1="500" x2="0" y2="20" class="axis"/>
+    <path d="M0 20 L-10 40 L10 40 Z" class="arrow-head"/>
+
+    <line x1="172.5" y1="500" x2="172.5" y2="45" class="grid"/>
+    <line x1="345" y1="500" x2="345" y2="45" class="zero"/>
+    <line x1="517.5" y1="500" x2="517.5" y2="45" class="grid"/>
+    <line x1="0" y1="275" x2="650" y2="275" class="grid"/>
+    <line x1="0" y1="50" x2="650" y2="50" class="grid"/>
+
+    <text x="-45" y="510" class="tick">0</text>
+    <text x="-55" y="285" class="tick">0.5</text>
+    <text x="-35" y="60" class="tick">1</text>
+    <text x="315" y="575" class="math">x = 0</text>
+
+    <!-- Identical S curves, horizontally shifted by 172.5px around x=0. -->
+    <path d="M0 500 C130 500 170 500 198 498 C220 494 228 455 236 342 C244 235 256 76 282 56 C304 42 420 50 650 50"
+          fill="none" stroke="#2563eb" stroke-width="7" stroke-linecap="round"/>
+    <path d="M0 500 C302.5 500 342.5 500 370.5 498 C392.5 494 400.5 455 408.5 342 C416.5 235 428.5 76 454.5 56 C476.5 42 592.5 50 650 50"
+          fill="none" stroke="#ef4444" stroke-width="7" stroke-linecap="round"/>
+
+    <circle cx="242" cy="275" r="11" fill="#2563eb"/>
+    <circle cx="414.5" cy="275" r="11" fill="#ef4444"/>
+  </g>
+
+  <path d="M765 420 H835" stroke="#111827" stroke-width="14" stroke-linecap="round" fill="none"/>
+  <path d="M865 420 L825 392 L825 448 Z" fill="#111827"/>
+
+  <!-- Right panel: subtraction result -->
+  <g transform="translate(920 130)">
+    <text x="230" y="-25" class="label" fill="#6d28d9">left - right</text>
+
+    <line x1="0" y1="500" x2="610" y2="500" class="axis"/>
+    <path d="M610 500 L590 490 L590 510 Z" class="arrow-head"/>
+    <line x1="0" y1="500" x2="0" y2="20" class="axis"/>
+    <path d="M0 20 L-10 40 L10 40 Z" class="arrow-head"/>
+
+    <line x1="152.5" y1="500" x2="152.5" y2="45" class="grid"/>
+    <line x1="305" y1="500" x2="305" y2="45" class="zero"/>
+    <line x1="457.5" y1="500" x2="457.5" y2="45" class="grid"/>
+    <line x1="0" y1="275" x2="570" y2="275" class="grid"/>
+    <line x1="0" y1="50" x2="570" y2="50" class="grid"/>
+
+    <text x="-45" y="510" class="tick">0</text>
+    <text x="-55" y="285" class="tick">0.5</text>
+    <text x="-35" y="60" class="tick">1</text>
+    <text x="275" y="575" class="math">x = 0</text>
+
+    <path d="M0 500 C110 500 132 500 146 498 C160 494 164 455 168 330 C172 105 178 50 202 50 L408 50 C432 50 438 105 442 330 C446 455 450 494 464 498 C478 500 500 500 570 500"
+          fill="none" stroke="#6d28d9" stroke-width="7" stroke-linecap="round"/>
+  </g>
+</svg>

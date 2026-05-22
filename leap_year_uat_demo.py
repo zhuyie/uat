@@ -2,21 +2,21 @@
 
 This follows the visual idea in Michael Nielsen's universal approximation
 chapter: a sigmoid neuron with a large weight behaves like a soft step. Two
-opposing steps make a narrow bump, and many bumps can approximate a function's
-graph.
+shifted steps can be subtracted to make a narrow tower, and many towers can
+approximate a function's graph.
 
 Here the input is the raw year. The hidden layer contains two sigmoid neurons
 for each leap year in the chosen fitting interval, 1600-2399:
 
-    left edge:   sigmoid(slope * x + bias_left)
-    right edge:  sigmoid(slope * x + bias_right)
+    left sigmoid:   sigmoid(slope * x + bias_left)
+    right sigmoid:  sigmoid(slope * x + bias_right)
 
 The final output-layer neuron takes all hidden activations as its inputs. In its
-pre-activation sum, each left-edge hidden activation gets a positive weight and
-each right-edge hidden activation gets a negative weight. Their difference
-creates one local bump for each known leap year; the final sigmoid then turns
-that bump sum into a 0-to-1 score. Outside the fitting interval there are no
-bumps, so the network does not extrapolate the Gregorian rule.
+pre-activation sum, each left sigmoid gets a positive weight and each right
+sigmoid gets a negative weight. Their difference creates one local tower for
+each known leap year; the final sigmoid turns the tower sum into a 0-to-1
+score. Outside the fitting interval there are no towers, so the network does
+not extrapolate the Gregorian rule.
 """
 
 from __future__ import annotations
@@ -103,20 +103,21 @@ class LeapYearApproximator:
             left_edge = leap_year - self.half_width
             right_edge = leap_year + self.half_width
 
-            # sigmoid(k * (x - edge)) is sigmoid(k * x - k * edge).
-            left_step = SigmoidNeuron(
+            # Left sigmoid: sigmoid(k * (x - left_edge)).
+            left_sigmoid = SigmoidNeuron(
                 weight=self.hidden_slope,
                 bias=-self.hidden_slope * left_edge,
             )
-            right_step = SigmoidNeuron(
+            # Right sigmoid: sigmoid(k * (x - right_edge)).
+            right_sigmoid = SigmoidNeuron(
                 weight=self.hidden_slope,
                 bias=-self.hidden_slope * right_edge,
             )
 
-            hidden_layer.extend([left_step, right_step])
+            hidden_layer.extend([left_sigmoid, right_sigmoid])
             output_weights.extend([self.output_slope, -self.output_slope])
 
-        # The hidden layer sums to about 1 on a leap-year bump and about 0
+        # The hidden layer sums to about 1 on a leap-year tower and about 0
         # elsewhere, so this output threshold sits halfway between them.
         output_neuron = OutputNeuron(
             weights=output_weights,
