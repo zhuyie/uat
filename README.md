@@ -61,15 +61,15 @@ score <  0.5 -> predict False
 
 每个隐藏层神经元都是标准形式：
 
-```text
-activation = sigmoid(weight * input + bias)
-```
+$$
+\mathrm{activation} = \sigma(w x + b)
+$$
 
 sigmoid 函数本身的计算公式是：
 
-```text
-sigmoid(x) = 1 / (1 + e^(-x))
-```
+$$
+\sigma(x) = \frac{1}{1 + e^{-x}}
+$$
 
 其中：
 
