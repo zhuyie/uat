@@ -155,7 +155,6 @@ def print_sample_predictions(model: LeapYearApproximator) -> None:
         2001,
         2004,
         2100,
-        2400,
     ]
 
     print("Sample predictions")
